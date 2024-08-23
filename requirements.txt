@@ -1,0 +1,24 @@
+# Azure
+azure-functions==1.20.0
+azure-storage-blob==12.20.0
+azure-storage-queue==12.1.5
+azure-ai-formrecognizer==3.3.3
+azure-data-tables==12.5.0
+azure-cosmos==4.7.0
+azure-identity==1.17.1
+
+# 依存関係のないライブラリ
+numpy==1.26.3
+voyager==2.0.2
+pandas==2.2.2
+tabulate==0.9.0
+pipe
+openpyxl==3.1.5
+python-docx==1.1.2
+extract_msg
+python-pptx==0.6.23
+tiktoken==0.7.0 
+janome
+rank_bm25
+# openaiのembedding
+openai==1.12.0
