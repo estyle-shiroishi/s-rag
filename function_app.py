@@ -77,18 +77,9 @@ def blob_trigger(myblob: func.InputStream):
         
         logging.info(f"Processing blob: Name: {blob_name}")
 
-        metadata = blob_manager.get_metadata(DOC_CONTAINER_NAME, blob_name)
-        
-        # 'processed'メタデータが存在し、その値が'true'の場合、処理をスキップ
-        if metadata.get('processed') == 'true':
-            logging.info(f"Blob {blob_name} already processed. Skipping.")
-            return
+        queue_client = QueueClient(account_url=QUEUE_STORAGE_URI, queue_name=QUEUE_NAME, credential=DefaultAzureCredential())
 
-        blob_processor = BlobDocumentProcessor(blob_manager, parser, embedder, mapping_manager)
-        
-        blob_processor.process_and_save_document(DOC_CONTAINER_NAME, blob_name)
-        
-        blob_manager.add_metadata(DOC_CONTAINER_NAME, blob_name, {'processed': 'true'})
+        queue_client.send_message(content=base64.b64encode(blob_name.encode()).decode())
 
     except ResourceNotFoundError:
         # Blobが見つからない場合（削除された場合など）
@@ -146,46 +137,46 @@ def check_deleted_blobs(timer: func.TimerRequest) -> None:
     except Exception as e:
         logging.error(f"Error occurred in check_deleted_blobs: {e}")
 
-# @app.queue_trigger(arg_name="azqueue", queue_name=f"{QUEUE_NAME}",
-#                    connection="QueueStorageConnection")
-# def index_queued_blobs(azqueue: func.QueueMessage) -> None:
-#     """キューにあるBlobを1つずつインデクシングします
+@app.queue_trigger(arg_name="azqueue", queue_name=f"{QUEUE_NAME}",
+                   connection="QueueStorageConnection")
+def index_queued_blobs(azqueue: func.QueueMessage) -> None:
+    """キューにあるBlobを1つずつインデクシングします
 
-#     CosmosDBを使用しない場合は、BLOBに格納されているインデックスファイルへ書き込みを行う際に
-#     排他エラーが発生する可能性があるため、必ずhost.jsonのbatch_sizeが1になっていることを確認してください。
+    CosmosDBを使用しない場合は、BLOBに格納されているインデックスファイルへ書き込みを行う際に
+    排他エラーが発生する可能性があるため、必ずhost.jsonのbatch_sizeが1になっていることを確認してください。
     
-#     Args:
-#         azqueue (func.QueueMessage): キューから取得したメッセージ。
+    Args:
+        azqueue (func.QueueMessage): キューから取得したメッセージ。
 
-#     Returns:
-#         None
-#     """
+    Returns:
+        None
+    """
 
-#     try:
-#         # キューからBlob名を取得
-#         queue_item = azqueue.get_body().decode('UTF-8')
-#         doc_blobname = str(queue_item)
+    try:
+        # キューからBlob名を取得
+        queue_item = azqueue.get_body().decode('UTF-8')
+        doc_blobname = str(queue_item)
         
-#         # Blobのメタデータを取得
-#         metadata = blob_manager.get_metadata(DOC_CONTAINER_NAME, doc_blobname)
+        # Blobのメタデータを取得
+        metadata = blob_manager.get_metadata(DOC_CONTAINER_NAME, doc_blobname)
         
-#         # 'processed'メタデータが存在し、その値が'true'の場合、処理をスキップ
-#         if metadata.get('processed') == 'true':
-#             logging.info(f"Blob {doc_blobname} already processed. Skipping.")
-#             return
+        # 'processed'メタデータが存在し、その値が'true'の場合、処理をスキップ
+        if metadata.get('processed') == 'true':
+            logging.info(f"Blob {doc_blobname} already processed. Skipping.")
+            return
 
-#         blob_processor = BlobDocumentProcessor(blob_manager, parser, embedder, mapping_manager)
+        blob_processor = BlobDocumentProcessor(blob_manager, parser, embedder, mapping_manager)
         
-#         blob_processor.process_and_save_document(DOC_CONTAINER_NAME, doc_blobname)
+        blob_processor.process_and_save_document(DOC_CONTAINER_NAME, doc_blobname)
         
-#         # 処理済みマーカーをメタデータとして設定
-#         blob_manager.add_metadata(DOC_CONTAINER_NAME, doc_blobname, {'processed': 'true'})
+        # 処理済みマーカーをメタデータとして設定
+        blob_manager.add_metadata(DOC_CONTAINER_NAME, doc_blobname, {'processed': 'true'})
     
-#     except Exception as e:
-#         tb = traceback.format_exc()
-#         logging.error(f"Error occurred: {e}, traceback: {tb}")
+    except Exception as e:
+        tb = traceback.format_exc()
+        logging.error(f"Error occurred: {e}, traceback: {tb}")
     
-#     return
+    return
 
 @app.route(route="search/vector", methods=[func.HttpMethod.GET, func.HttpMethod.POST])
 def search_vector(req: func.HttpRequest) -> func.HttpResponse:
