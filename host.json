@@ -1,6 +1,5 @@
 {
   "version": "2.0",
-  "functionTimeout": "00:50:00",
   "extensions": {
     "queues": {
       "batchSize": 1,
@@ -22,10 +21,10 @@
     "version": "[4.*, 5.0.0)"
   },
   "singleton": {
-    "lockPeriod": "00:01:00",
-    "listenerLockPeriod": "00:01:00",
-    "listenerLockRecoveryPollingInterval": "00:01:00",
-    "lockAcquisitionTimeout": "00:01:00",
-    "lockAcquisitionPollingInterval": "00:01:00"
-}
+      "lockPeriod": "00:00:15",
+      "listenerLockPeriod": "00:00:30",
+      "listenerLockRecoveryPollingInterval": "00:01:00",
+      "lockAcquisitionTimeout": "00:03:00",
+      "lockAcquisitionPollingInterval": "00:00:05"
+  }
 }
