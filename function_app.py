@@ -21,44 +21,20 @@ from utils.blob_document_processor import BlobDocumentProcessor
 from utils.azure_embedder import AzureEmbedder
 from utils.document_parser import DocumentParser
 
-BLOB_STORAGE_URI = os.environ.get("BlobStorageConnection__serviceUri")
-QUEUE_STORAGE_URI = os.environ.get("QueueStorageConnection__serviceUri")
-QUEUE_NAME = os.environ.get("QUEUE_NAME") # BLOBにファイルがアップロードされた際に追加するインデックス待ちキュー
-CONNECTION_STRING = os.environ.get("CONNECTION_STRING") # BLOBストレージの接続文字列
-DOC_CONTAINER_NAME = os.environ.get("DOC_CONTAINER_NAME") # ドキュメントコンテナの名前
-CONTENT_CONTAINER_NAME = os.environ.get("CONTENT_CONTAINER_NAME") # コンテントコンテナの名前
-
-# Voyagerを使う場合
-DB_CONTAINER_NAME = os.environ.get("DB_CONTAINER_NAME") # ベクトルデータを格納するコンテナの名前
-VECTOR_INDEX_FILE_NAME = os.environ.get("VECTOR_INDEX_FILE_NAME") # ベクトルデータを格納するファイルの名前
-TEXT_TABLE_NAME = os.environ.get("TEXT_TABLE_NAME") # テキストデータを格納するAzure Table Storage上のテーブルの名前
-
-# COSMOS DBを使う場合
-COSMOSDB_URI = os.environ.get('COSMOSDB_URI') 
-COSMOSDB_KEY = os.environ.get('COSMOSDB_KEY')
-
-# Document Intelligence APIのエンドポイントとキー
-DI_API_ENDPOINT = os.environ.get("DOCUMENT_INTELLIGENCE_API_ENDPOINT")
-DI_API_KEY = os.environ.get("DOCUMENT_INTELLIGENCE_API_KEY")
-
-# インデクシング対象とする拡張子
-EXTENSIONS = [".pdf", ".csv", ".txt", ".png", ".jpg", ".jpeg", ".xls", ".xlsx", ".doc", ".docx", ".msg", ".pptx", ".ppt"]
-
-
-# from config import (
-#     BLOB_STORAGE_URI,
-#     QUEUE_STORAGE_URI,
-#     QUEUE_NAME,
-#     DOC_CONTAINER_NAME,
-#     DB_CONTAINER_NAME,
-#     DI_API_ENDPOINT,
-#     DI_API_KEY,
-#     AOAI_API_KEY,
-#     AOAI_API_ENDPOINT,
-#     EMBEDDING_DEPLOYMENT_NAME,
-#     EMBEDDING_VERSION,
-#     CONNECTION_STRING
-# )
+from config import (
+    BLOB_STORAGE_URI,
+    QUEUE_STORAGE_URI,
+    QUEUE_NAME,
+    DOC_CONTAINER_NAME,
+    DB_CONTAINER_NAME,
+    DI_API_ENDPOINT,
+    DI_API_KEY,
+    AOAI_API_KEY,
+    AOAI_API_ENDPOINT,
+    EMBEDDING_DEPLOYMENT_NAME,
+    EMBEDDING_VERSION,
+    CONNECTION_STRING
+)
 
 
 from genie_bp import genie_bp
