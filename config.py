@@ -32,3 +32,4 @@ SEARCH_API_KEY = os.environ.get("SEARCH_API_KEY")
 
 # Azure Functionsの設定（オプション）
 AZURE_FUNCTIONS_STORAGE = os.environ.get("AzureWebJobsStorage", "UseDevelopmentStorage=true")
+CONNECTION_STRING = os.environ.get("CONNECTION_STRING")

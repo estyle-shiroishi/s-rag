@@ -32,7 +32,8 @@ from config import (
     AOAI_API_KEY,
     AOAI_API_ENDPOINT,
     EMBEDDING_DEPLOYMENT_NAME,
-    EMBEDDING_VERSION
+    EMBEDDING_VERSION,
+    CONNECTION_STRING
 )
 
 
@@ -43,6 +44,7 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 app.register_blueprint(genie_bp)
 
 blob_manager = BlobManager(account_url=BLOB_STORAGE_URI, credential=DefaultAzureCredential())
+# blob_manager = BlobManager(connection_string=CONNECTION_STRING)
 
 parser = DocumentParser(DI_API_ENDPOINT, DI_API_KEY)
 
@@ -58,8 +60,8 @@ mapping_manager = ChunkMappingManager(blob_manager, searchers = {
                 'vector': VectorSearch(blob_manager, embedder, DB_CONTAINER_NAME, 'indexes/vector_index')
             })
 
-@app.blob_trigger(arg_name="myblob", path=f"{DOC_CONTAINER_NAME}/{{name}}",
-                               connection="BlobStorageConnection") 
+@app.blob_trigger(arg_name="myblob", path=f"{DOC_CONTAINER_NAME}/{{name}}",connection="BlobStorageConnection") 
+# @app.blob_trigger(arg_name="myblob", path=f"{DOC_CONTAINER_NAME}/{{name}}",connection="CONNECTION_STRING") 
 def blob_trigger(myblob: func.InputStream):
     """
     Blob トリガー関数です。Blobにファイルがアップロードされた際に実行されます。
@@ -78,6 +80,7 @@ def blob_trigger(myblob: func.InputStream):
         logging.info(f"Processing blob: Name: {blob_name}")
 
         queue_client = QueueClient(account_url=QUEUE_STORAGE_URI, queue_name=QUEUE_NAME, credential=DefaultAzureCredential())
+        # queue_client = QueueClient.from_connection_string(conn_str=CONNECTION_STRING, queue_name=QUEUE_NAME)
 
         queue_client.send_message(content=base64.b64encode(blob_name.encode()).decode())
 
@@ -106,6 +109,7 @@ def check_deleted_blobs(timer: func.TimerRequest) -> None:
         blob_processor = BlobDocumentProcessor(blob_manager, parser, embedder, mapping_manager)
         
         blob_service_client = BlobServiceClient(account_url=BLOB_STORAGE_URI, credential=DefaultAzureCredential())
+        # blob_service_client = BlobServiceClient.from_connection_string(CONNECTION_STRING)
         doc_container_client = blob_service_client.get_container_client(container=DOC_CONTAINER_NAME)
         db_container_client = blob_service_client.get_container_client(container=DB_CONTAINER_NAME)
 
@@ -137,8 +141,8 @@ def check_deleted_blobs(timer: func.TimerRequest) -> None:
     except Exception as e:
         logging.error(f"Error occurred in check_deleted_blobs: {e}")
 
-@app.queue_trigger(arg_name="azqueue", queue_name=f"{QUEUE_NAME}",
-                   connection="QueueStorageConnection")
+@app.queue_trigger(arg_name="azqueue", queue_name=f"{QUEUE_NAME}",connection="QueueStorageConnection")
+# @app.queue_trigger(arg_name="azqueue", queue_name=f"{QUEUE_NAME}",connection="CONNECTION_STRING")
 def index_queued_blobs(azqueue: func.QueueMessage) -> None:
     """キューにあるBlobを1つずつインデクシングします
 
