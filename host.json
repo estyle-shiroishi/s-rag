@@ -4,10 +4,9 @@
   "extensions": {
     "queues": {
       "batchSize": 1,
-      "newBatchThreshold": 0,
-      "visibilityTimeout": "00:10:00",
       "maxDequeueCount": 5,
-      "maxPollingInterval": "00:01:00"
+      "visibilityTimeout": "00:00:30",
+      "newBatchThreshold": 0
     }
   },
   "logging": {
@@ -23,10 +22,10 @@
     "version": "[4.*, 5.0.0)"
   },
   "singleton": {
-    "lockPeriod": "00:15:00",
-    "listenerLockPeriod": "00:15:00",
+    "lockPeriod": "00:01:00",
+    "listenerLockPeriod": "00:01:00",
     "listenerLockRecoveryPollingInterval": "00:01:00",
-    "lockAcquisitionTimeout": "00:15:00",
-    "lockAcquisitionPollingInterval": "00:00:15"
-  }
+    "lockAcquisitionTimeout": "00:01:00",
+    "lockAcquisitionPollingInterval": "00:01:00"
+}
 }
