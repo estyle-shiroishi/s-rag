@@ -5,7 +5,7 @@
       "batchSize": 1,
       "maxDequeueCount": 5,
       "visibilityTimeout": "00:00:30",
-      "newBatchThreshold": 8
+      "newBatchThreshold": 0
     }
   },
   "logging": {
